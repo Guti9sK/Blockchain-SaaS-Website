@@ -1,0 +1,58 @@
+---
+import InteriorHero from "../../components/InteriorHero.astro";
+import Tag from "../../components/Tag";
+import DefaultLayout from "../../layouts/Default.astro";
+import { type CollectionEntry, getCollection } from "astro:content";
+import { getPostColorFromCategory } from "../../utils/post";
+import InteriorContent from "../../components/InteriorContent.astro";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog");
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: post,
+  }));
+}
+type Props = CollectionEntry<"blog">;
+
+const post: Props = Astro.props;
+const {
+  data: {
+    category,
+    title,
+    description,
+    author: { name, title: authorTitle },
+  },
+} = post;
+const { Content } = await post.render();
+---
+
+<DefaultLayout>
+  <InteriorHero>
+    <div class="relative">
+      <div class="flex justify-center">
+        <Tag color={getPostColorFromCategory(category)}>{category}</Tag>
+      </div>
+      <h1
+        class="font-heading font-black text-5xl md:text-6xl lg:text-7xl text-center mt-4"
+      >
+        {title}
+      </h1>
+      <p class="text-center text-xl mt-8 text-zinc-400 max-w-2xl mx-auto">
+        {description}
+      </p>
+      <div class="flex flex-col items-center mt-6">
+        <div class="size-16 rounded-full bg-cover bg-center bg-zinc-700"></div>
+        <div class="font-extrabold text-lg mt-4">{name}</div>
+        <div class="text-zinc-500">{authorTitle}</div>
+      </div>
+    </div>
+  </InteriorHero>
+  <InteriorContent>
+    <div
+      class="prose prose-invert prose-lg mx-auto prose-zinc prose-headings:font-heading prose-headings:font-black prose-h2:lg:text-5xl prose-h2:text-3xl prose-h2:md:text-4xl prose-h3:md:text-3xl prose-h3:text-2xl prose-h3:lg:text-4xl"
+    >
+      <Content />
+    </div>
+  </InteriorContent>
+</DefaultLayout>

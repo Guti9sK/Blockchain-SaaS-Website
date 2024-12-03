@@ -1,0 +1,65 @@
+---
+import CallToAction from "../sections/CallToAction";
+import Footer from "../sections/Footer";
+import Header from "../sections/Header";
+import Testimonials from "../sections/Testimonials";
+import "../styles/global.css";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blockchain Blog</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Karla:ital,wght@0,200..800;1,200..800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <Header client:load />
+    <slot />
+    <Testimonials client:load />
+    <CallToAction client:load />
+    <Footer />
+  </body>
+</html>
+
+<style is:global>
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+
+  .lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+
+  .lenis.lenis-stopped {
+    overflow: hidden;
+  }
+
+  .lenis.lenis-smooth iframe {
+    pointer-events: none;
+  }
+</style>
+
+<script>
+  import Lenis from "lenis";
+
+  const lenis = new Lenis();
+
+  function raf(time: number) {
+    lenis.raf(time);
+    requestAnimationFrame(raf);
+  }
+
+  requestAnimationFrame(raf);
+</script>

@@ -1,0 +1,104 @@
+---
+import DefaultLayout from "../../layouts/Default.astro";
+import CutCornerButton from "../../components/CutCornerButton";
+import Hexagon from "../../components/Hexagon";
+import { getCollection } from "astro:content";
+import Card from "../../components/Card";
+import Tag from "../../components/Tag";
+import { getPostColorFromCategory } from "../../utils/post";
+import { twMerge } from "tailwind-merge";
+import { motion } from "framer-motion";
+import InteriorContent from "../../components/InteriorContent.astro";
+
+const posts = (await getCollection("blog")).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+const latestPost = posts[0];
+---
+
+<DefaultLayout>
+  <section class="py-60 relative overflow-x-clip">
+    <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+      <Hexagon size={800} client:load />
+    </div>
+    <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+      <Hexagon size={1200} client:load duration={60} reverse />
+    </div>
+    <div class="padding-container">
+      <div class="max-w-3xl mx-auto">
+        <p
+          class="uppercase font-extrabold text-zinc-500 text-center tracking-wider"
+        >
+          Latest post
+        </p>
+        <h1
+          class="text-5xl md:text-6xl lg:text-7xl font-heading font-black text-center mt-4"
+        >
+          {latestPost.data.title}
+        </h1>
+        <p
+          class="text-center text-xl md:text-2xl mt-6 text-zinc-400 max-w-xl mx-auto"
+        >
+          {latestPost.data.description}
+        </p>
+        <div class="flex justify-center mt-12">
+          <a href={`/blog/${latestPost.slug}`}>
+            <CutCornerButton>Read more</CutCornerButton>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+  <InteriorContent>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div class="flex flex-col gap-8 lg:gap-12">
+        {
+          posts.map(({ data: { category, title, description }, slug }, i) => (
+            <motion.a
+              client:load
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.5 }}
+              transition={{ duration: 0.5, ease: "easeIn" }}
+              href={`/blog/${slug}`}
+              className={twMerge(i % 2 === 0 ? "" : "block md:hidden")}
+            >
+              <Card
+                color={getPostColorFromCategory(category)}
+                buttonText="Read more"
+              >
+                <Tag color={getPostColorFromCategory(category)}>{category}</Tag>
+                <h2 class="font-heading font-black font-3xl mt-4">{title}</h2>
+                <p class="text-lg mt-6 text-zinc-400">{description}</p>
+              </Card>
+            </motion.a>
+          ))
+        }
+      </div>
+      <div class="hidden md:flex flex-col gap-8 lg:gap-12 mt-24">
+        {
+          posts.map(({ data: { category, title, description }, slug }, i) => (
+            <motion.a
+              client:load
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.5 }}
+              transition={{ duration: 0.5, ease: "easeIn" }}
+              href={`/blog/${slug}`}
+              className={twMerge(i % 2 === 0 ? "hidden" : "")}
+            >
+              <Card
+                color={getPostColorFromCategory(category)}
+                buttonText="Read more"
+              >
+                <Tag color={getPostColorFromCategory(category)}>{category}</Tag>
+                <h2 class="font-heading font-black font-3xl mt-4">{title}</h2>
+                <p class="text-lg mt-6 text-zinc-400">{description}</p>
+              </Card>
+            </motion.a>
+          ))
+        }
+      </div>
+    </div>
+  </InteriorContent>
+</DefaultLayout>
